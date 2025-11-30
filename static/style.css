@@ -1,56 +1,77 @@
 body {
-    background: #e7f4ea;
-    font-family: Arial, sans-serif;
+    background: #ecf8f0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
     background: white;
-    width: 40%;
+    width: 50%;
     margin: auto;
-    padding: 30px;
-    margin-top: 50px;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.2);
+    padding: 35px;
+    margin-top: 40px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    animation: fadeIn 0.9s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 h2 {
     text-align: center;
-    color: #008000; /* Dark green for header */
+    color: #006b3c;
+    margin-bottom: 20px;
 }
 
 label {
-    display: block;
-    margin-top: 10px;
     font-weight: bold;
+    margin-top: 12px;
 }
 
-input, button {
+input {
     width: 100%;
     padding: 10px;
-    margin: 5px 0 15px 0; /* Adjusted margin for better spacing */
-    box-sizing: border-box; /* Include padding in width calculation */
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    margin-top: 6px;
+    border-radius: 8px;
+    border: 1px solid #bbb;
 }
 
 button {
-    background: #008000;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background: #00994d;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-size: 17px;
     cursor: pointer;
-    font-size: 16px;
-    transition: background 0.3s ease;
 }
 
 button:hover {
-    background: #006400;
+    background: #007f41;
 }
 
 .result {
+    background: #e0ffe7;
+    padding: 20px;
+    border-left: 5px solid #00994d;
     margin-top: 25px;
-    padding: 15px;
-    background: #dfffd8;
-    border-left: 5px solid green;
-    border-radius: 4px;
+    border-radius: 10px;
+}
+
+.error-box {
+    background: #ffe6e6;
+    padding: 18px;
+    border-left: 5px solid red;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.chart-container {
+    margin-top: 40px;
 }

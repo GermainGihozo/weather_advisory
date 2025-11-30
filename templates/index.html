@@ -3,54 +3,108 @@
 <head>
     <title>AI Weather & Climate Advisory System</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
 
 <div class="container">
-    <h2>🌦 AI Weather & Rainfall Prediction</h2>
+    <h2>🌦 AI Weather & Rainfall Prediction System</h2>
 
+    
     <form method="POST" action="/predict">
         <label>Temperature (°C)</label>
-        <input type="number" name="temperature" step="0.1" required>
+        <input type="number" name="temperature" required step="0.1">
 
         <label>Humidity (%)</label>
-        <input type="number" name="humidity" step="0.1" required>
+        <input type="number" name="humidity" required step="0.1">
 
         <label>Wind Speed (km/h)</label>
-        <input type="number" name="wind" step="0.1" required>
-        
-        <label>Pressure (mb)</label> 
-        <input type="number" name="pressure" step="0.1" required>
+        <input type="number" name="wind" required step="0.1">
+
+        <label>Pressure (mb)</label>
+        <input type="number" name="pressure" required step="0.1">
 
         <label>Cloud Cover (%)</label>
-        <input type="number" name="cloud" step="0.1" required>
-        
+        <input type="number" name="cloud" required step="0.1">
+
         <button type="submit">Predict Rainfall</button>
     </form>
+<hr>
+<form method="POST" action="/predict_auto" onsubmit="document.getElementById('spinner').style.display='block'">
+  <label>Auto-predict by city (OpenWeather):</label>
+  <input name="city" placeholder="Kigali" required>
+  <button type="submit">Auto Predict</button>
+</form>
+<div id="spinner" style="display:none">Predicting...</div>
 
-    {% if prediction_value != None %}
-        <div class="result">
-            <h3>🌧 Predicted Rainfall: <b>{{ prediction_value | round(2) }} mm</b></h3>
-            
-            {% if farmer_advice %}
-                <hr>
-                
-                <h4>{{ farmer_advice.title }}</h4>
-                
-                <p><strong>General Field Advice:</strong> {{ farmer_advice.general }}</p>
-                
-                <p><strong>🌽 Advice for Maize:</strong> {{ farmer_advice.maize }}</p>
-                
-                <p><strong>🌿 Advice for Beans:</strong> {{ farmer_advice.beans }}</p>
-                
-            {% endif %}
-        </div>
-    {% elif error_message %}
-        <div class="result" style="background: #ffe3e3; border-left: 5px solid red;">
-            <h3 style="color:red;">{{ error_message }}</h3>
-        </div>
+    {% if prediction_value %}
+    <div class="result">
+        <h3>🌧 Predicted Rainfall: <b>{{ prediction_value | round(2) }} mm</b></h3>
+
+        <h4>{{ farmer_advice.title }}</h4>
+
+        <p><b>General Advice:</b> {{ farmer_advice.general }}</p>
+        <p><b>🌽 Maize:</b> {{ farmer_advice.maize }}</p>
+        <p><b>🌿 Beans:</b> {{ farmer_advice.beans }}</p>
+
+        <a href="/download_report" target="_blank">
+            <button style="margin-top:15px;background:#005bbb;">📄 Download PDF Report</button>
+        </a>
+    </div>
     {% endif %}
+
+    {% if error_message %}
+    <div class="error-box">
+        <h3>{{ error_message }}</h3>
+    </div>
+    {% endif %}
+
+    <!-- Chart Section -->
+    <div class="chart-container">
+        <canvas id="rainfallChart" data-dates='{{ chart_dates | tojson | safe }}' data-values='{{ chart_values | tojson | safe }}'></canvas>
+    </div>
 </div>
+<div id="map" style="height: 350px; margin-top: 20px;"></div>
+
+<script>
+function initMap() {
+  const center = { lat: -1.95, lng: 30.06 }; // Kigali
+  const map = new google.maps.Map(document.getElementById("map"), { zoom: 8, center });
+  // Optionally place markers from prediction_log.csv via an API endpoint
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
+
+<script>
+var canvas = document.getElementById('rainfallChart');
+var dates = [];
+var values = [];
+try {
+    dates = JSON.parse(canvas.getAttribute('data-dates') || '[]');
+    values = JSON.parse(canvas.getAttribute('data-values') || '[]');
+} catch (e) {
+    console.error('Failed to parse chart data', e);
+}
+var ctx = canvas.getContext('2d');
+var chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: dates,
+        datasets: [{
+            label: 'Rainfall History (mm)',
+            data: values
+        }]
+    }
+});
+</script>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+  .then(()=>console.log('SW registered'));
+}
+</script>
+<link rel="manifest" href="/manifest.json">
 
 </body>
 </html>
